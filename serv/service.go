@@ -1,7 +1,10 @@
 package serv
 
 import (
+	"flag"
 	"fmt"
+
+	"github.com/rakyll/globalconf"
 )
 
 type Service interface {
@@ -12,9 +15,13 @@ type Service interface {
 
 var services map[string]Service
 
-func Register(name string, rcvr Service) error {
+func Register(name string, rcvr Service, fs *flag.FlagSet) error {
 	if _, exists := services[name]; exists {
-		return fmt.Errorf("Service '%s' already exists, refusing to overwrite.", name)
+		return fmt.Errorf("Service '%s' already exists, refusing to overwrite", name)
+	}
+
+	if fs != nil {
+		globalconf.Register(name, fs)
 	}
 
 	services[name] = rcvr

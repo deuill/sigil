@@ -5,20 +5,29 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/rakyll/globalconf"
 	"github.com/thoughtmonster/crowley/serv"
+
 	_ "github.com/thoughtmonster/crowley/serv/http"
 )
 
 func main() {
-	log.Println("Initializing server...")
+	opts := &globalconf.Options{EnvPrefix: "CROWLEY_"}
+	conf, err := globalconf.NewWithOptions(opts)
+	if err != nil {
+		log.Println("Error loading configuration:", err)
+		os.Exit(1)
+	}
 
-	err := serv.Init()
+	conf.ParseAll()
+
+	err = serv.Init()
 	if err != nil {
 		log.Println("Error initializing services:", err)
 		os.Exit(1)
 	}
 
-	log.Println("Server initialized...")
+	log.Println("Server start")
 
 	sigStop := make(chan os.Signal)
 	signal.Notify(sigStop, os.Interrupt, os.Kill)
@@ -34,7 +43,7 @@ func main() {
 				log.Println(err)
 			}
 
-			log.Println("The environment might be in an unclean state.")
+			log.Println("The environment might be in an unclean state")
 			os.Exit(2)
 		}
 	}
