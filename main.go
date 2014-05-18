@@ -7,12 +7,10 @@ import (
 
 	"github.com/rakyll/globalconf"
 	"github.com/thoughtmonster/crowley/serv"
-
-	_ "github.com/thoughtmonster/crowley/serv/http"
 )
 
 func main() {
-	opts := &globalconf.Options{EnvPrefix: "CROWLEY_"}
+	opts := &globalconf.Options{EnvPrefix: "CROWLEY_", Filename: "conf/crowley.conf"}
 	conf, err := globalconf.NewWithOptions(opts)
 	if err != nil {
 		log.Println("Error loading configuration:", err)
@@ -27,7 +25,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Println("Server start")
+	log.Println("Server started successfully")
 
 	sigStop := make(chan os.Signal)
 	signal.Notify(sigStop, os.Interrupt, os.Kill)
