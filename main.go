@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"os/signal"
 
@@ -13,35 +13,37 @@ func main() {
 	opts := &globalconf.Options{EnvPrefix: "CROWLEY_", Filename: "conf/crowley.conf"}
 	conf, err := globalconf.NewWithOptions(opts)
 	if err != nil {
-		log.Println("Error loading configuration:", err)
+		fmt.Println("Error loading configuration:", err)
 		os.Exit(1)
 	}
 
 	conf.ParseAll()
 
+	fmt.Print("Starting server... ")
+
 	err = serv.Init()
 	if err != nil {
-		log.Println("Error initializing services:", err)
+		fmt.Printf("error initializing services:\n%s\n", err)
 		os.Exit(1)
 	}
 
-	log.Println("Server started successfully")
+	fmt.Println("started successfully.")
 
 	sigStop := make(chan os.Signal)
 	signal.Notify(sigStop, os.Interrupt, os.Kill)
 
 	select {
 	case <-sigStop:
-		log.Println("Shutting down server...")
+		fmt.Println("Shutting down server...")
 
 		errs := serv.Shutdown()
 		if errs != nil {
-			log.Println("The following services failed to shut down cleanly:")
+			fmt.Println("The following services failed to shut down cleanly:")
 			for _, err = range errs {
-				log.Println(err)
+				fmt.Println(err)
 			}
 
-			log.Println("The environment might be in an unclean state")
+			fmt.Println("The environment might be in an unclean state")
 			os.Exit(2)
 		}
 	}

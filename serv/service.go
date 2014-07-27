@@ -8,7 +8,6 @@ import (
 )
 
 type Service interface {
-	Setup() error
 	Start() error
 	Stop() error
 }
@@ -31,13 +30,9 @@ func Register(name string, rcvr Service, fs *flag.FlagSet) error {
 func Init() error {
 	var err error
 
-	for _, s := range services {
-		if err = s.Setup(); err != nil {
-			return err
-		}
-
+	for name, s := range services {
 		if err = s.Start(); err != nil {
-			return err
+			return fmt.Errorf("[%s]: %s", name, err)
 		}
 	}
 
@@ -50,7 +45,7 @@ func Shutdown() []error {
 
 	for name, s := range services {
 		if err = s.Stop(); err != nil {
-			errs = append(errs, fmt.Errorf("%s: %s", name, err))
+			errs = append(errs, fmt.Errorf("[%s]: %s", name, err))
 		}
 	}
 
