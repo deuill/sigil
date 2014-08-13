@@ -6,11 +6,11 @@ import (
 	"os/signal"
 
 	"github.com/rakyll/globalconf"
-	"github.com/thoughtmonster/crowley/serv"
+	"github.com/thoughtmonster/sigil/serv"
 )
 
 func main() {
-	opts := &globalconf.Options{EnvPrefix: "CROWLEY_", Filename: "conf/crowley.conf"}
+	opts := &globalconf.Options{EnvPrefix: "SIGIL_", Filename: "conf/sigil.conf"}
 	conf, err := globalconf.NewWithOptions(opts)
 	if err != nil {
 		fmt.Println("Error loading configuration:", err)

@@ -1,5 +1,5 @@
 package main
 
 import (
-	_ "github.com/thoughtmonster/crowley/serv/http"
+	_ "github.com/thoughtmonster/sigil/serv/http"
 )

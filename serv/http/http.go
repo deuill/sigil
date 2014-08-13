@@ -10,7 +10,7 @@ import (
 	"time"
 
 	ini "github.com/rakyll/goini"
-	"github.com/thoughtmonster/crowley/serv"
+	"github.com/thoughtmonster/sigil/serv"
 )
 
 type HTTPService struct {
@@ -24,8 +24,8 @@ func (s *HTTPService) handleRequest(w http.ResponseWriter, r *http.Request) {
 	base := *s.base + "/" + r.Host
 
 	// Override global variables with site configuration, if any exists.
-	if t, exists := s.sites[r.Host]; exists {
-		base, _ = t.GetString("", "base")
+	if _, exists := s.sites[r.Host]; exists {
+		base, _ = s.sites[r.Host].GetString("", "base")
 	}
 
 	// Return 404 error if the main controller isn't found.
@@ -44,7 +44,9 @@ func (s *HTTPService) handleError(code int, w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(code)
+
 	tpl, _ := template.New("error").Parse(errorTemplate)
 	tpl.Execute(w, errorCodes[code])
 }
@@ -117,7 +119,7 @@ func init() {
 	h := &HTTPService{
 		port:  fs.String("port", "80", ""),
 		base:  fs.String("base", "/srv/http", ""),
-		conf:  fs.String("conf", "/etc/crowley/sites.d", ""),
+		conf:  fs.String("conf", "/etc/sigil/sites.d", ""),
 		sites: make(map[string]ini.Dict),
 	}
 
