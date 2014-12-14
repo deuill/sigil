@@ -1,6 +1,7 @@
 package http
 
 import (
+	// Standard library
 	"flag"
 	"fmt"
 	"html/template"
@@ -9,8 +10,11 @@ import (
 	"path/filepath"
 	"time"
 
+	// Internal packages
+	"github.com/deuill/sigil/serv"
+
+	// External packages
 	ini "github.com/rakyll/goini"
-	"github.com/thoughtmonster/sigil/serv"
 )
 
 type HTTPService struct {
