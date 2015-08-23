@@ -1,5 +1,5 @@
 # Temporary build files
 .tmp
 
-# Auto-generated services file.
-services.go
+# Auto-generated Go source files.
+imports.go

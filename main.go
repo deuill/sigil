@@ -5,37 +5,68 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 
 	// Internal packages
-	"github.com/deuill/sigil/serv"
+	"github.com/deuill/sigil/srv"
 
 	// External packages
 	"github.com/rakyll/globalconf"
 )
 
-// Entry point for Sigil, this sets up global configuration and starts internal services.
+func setup(name string) error {
+	var (
+		conf *globalconf.GlobalConf
+		file string
+		err  error
+	)
+
+	// Check for environment variable override, and return error if override is set but file is
+	// inaccessible. Otherwise, try for the default global location (in the "/etc" directory).
+	if file := os.Getenv(strings.ToUpper(name) + "_CONFIG"); file != "" {
+		if _, err = os.Stat(file); err != nil {
+			return err
+		}
+	} else {
+		file = "/etc/" + name + "/" + name + ".conf"
+		if _, err = os.Stat(file); err != nil {
+			file = ""
+		}
+	}
+
+	// Load from specific configuration file if set, or use local configuration file as a fallback.
+	if file != "" {
+		if conf, err = globalconf.NewWithOptions(&globalconf.Options{file, ""}); err != nil {
+			return err
+		}
+	} else if conf, err = globalconf.New(name); err != nil {
+		return err
+	}
+
+	conf.EnvPrefix = strings.ToUpper(name) + "_"
+	conf.ParseAll()
+
+	return nil
+}
+
 func main() {
-	conf, err := globalconf.New("sigil")
-	if err != nil {
+	var err error
+
+	if err = setup("sigil"); err != nil {
 		fmt.Println("Error loading configuration:", err)
 		os.Exit(1)
 	}
 
-	// Initialize configuration, reading from environment variables using a 'SIGIL_' prefix first,
-	// then moving to a static configuration file, usually located in ~/.config/sigil/config.ini.
-	conf.EnvPrefix = "SIGIL_"
-	conf.ParseAll()
-
 	fmt.Print("Starting server... ")
 
 	// Initialize HTTP and attached services.
-	err = serv.Init()
+	err = srv.Init()
 	if err != nil {
 		fmt.Printf("error initializing services:\n%s\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("started successfully.")
+	fmt.Println("done.")
 
 	// Listen for and terminate Sigil on SIGKILL or SIGINT signals.
 	sigStop := make(chan os.Signal)
@@ -43,18 +74,7 @@ func main() {
 
 	select {
 	case <-sigStop:
-		fmt.Println("Shutting down server...")
-
-		errs := serv.Shutdown()
-		if errs != nil {
-			fmt.Println("The following services failed to shut down cleanly:")
-			for _, err = range errs {
-				fmt.Println(err)
-			}
-
-			fmt.Println("The environment might be in an unclean state")
-			os.Exit(2)
-		}
+		fmt.Println("\rShutting down server...")
 	}
 
 	os.Exit(0)

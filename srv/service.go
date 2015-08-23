@@ -1,19 +1,22 @@
-package serv
+package srv
 
 import (
+	// Standard library
 	"flag"
 	"fmt"
 
+	// External packages
 	"github.com/rakyll/globalconf"
 )
 
 type Service interface {
-	Start() error
-	Stop() error
+	Init() error
 }
 
+// A map of all registered services.
 var services map[string]Service
 
+// Register attaches services, to be initialized in a future date.
 func Register(name string, rcvr Service, fs *flag.FlagSet) error {
 	if _, exists := services[name]; exists {
 		return fmt.Errorf("Service '%s' already exists, refusing to overwrite", name)
@@ -27,30 +30,14 @@ func Register(name string, rcvr Service, fs *flag.FlagSet) error {
 	return nil
 }
 
+// Initialize all registered services, using the Service.Init method.
 func Init() error {
 	var err error
 
 	for name, s := range services {
-		if err = s.Start(); err != nil {
+		if err = s.Init(); err != nil {
 			return fmt.Errorf("[%s]: %s", name, err)
 		}
-	}
-
-	return nil
-}
-
-func Shutdown() []error {
-	var err error
-	var errs []error
-
-	for name, s := range services {
-		if err = s.Stop(); err != nil {
-			errs = append(errs, fmt.Errorf("[%s]: %s", name, err))
-		}
-	}
-
-	if len(errs) > 0 {
-		return errs
 	}
 
 	return nil

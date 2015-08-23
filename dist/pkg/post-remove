@@ -1,0 +1,13 @@
+#!/bin/sh
+# Post-remove script for Sigil.
+
+# Stop 'sigil' service, if running.
+service sigil status > /dev/null 2>&1
+[ $? -eq 0 ] && service sigil stop
+
+# Change configuration directory permissions, if existing.
+[ -d /etc/sigil ] && chown -R root:root /etc/sigil
+
+# Remove user 'sigil' if exists.
+getent passwd sigil > /dev/null 2>&1
+[ $? -eq 0 ] && userdel sigil

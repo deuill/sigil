@@ -1,0 +1,12 @@
+[Unit]
+Description=Sigil web application server
+
+[Service]
+User=sigil
+Group=sigil
+
+PIDFile=/var/run/sigil/sigil.pid
+ExecStart=/usr/bin/sigil
+
+[Install]
+WantedBy=multi-user.target

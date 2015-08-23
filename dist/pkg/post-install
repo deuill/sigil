@@ -1,0 +1,12 @@
+#!/bin/sh
+# Post-install script for Sigil.
+
+# Check if 'sigil' user exists, and create if not.
+getent passwd sigil > /dev/null 2>&1
+[ $? -ne 0 ] && useradd -r -d /tmp/sigil -s /sbin/nologin sigil
+
+# Change ownership of configuration files to user 'sigil'.
+chown -R sigil:sigil /etc/sigil
+
+# Allow binding to lower ports for 'sigil' binary.
+setcap 'cap_net_bind_service=+ep' /usr/bin/sigil
