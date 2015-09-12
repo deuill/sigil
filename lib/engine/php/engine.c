@@ -1,7 +1,6 @@
 // Standard library.
 #include <stdio.h>
 #include <errno.h>
-#include <string.h>
 
 // PHP includes.
 #include <main/php.h>
