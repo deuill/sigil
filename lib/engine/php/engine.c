@@ -13,6 +13,7 @@
 // Local includes.
 #include "engine.h"
 #include "context.h"
+#include "_cgo_export.h"
 
 const char engine_ini_defaults[] =
 	"html_errors = 0\n"
@@ -25,30 +26,13 @@ const char engine_ini_defaults[] =
 
 static int engine_ub_write(const char *str, uint str_length TSRMLS_DC)  {
 	engine_context *context = (engine_context *) SG(server_context);
-	size_t buffer_free = context->buffer.size - context->buffer.used;
 
-	// Enlarge buffer if size of string exceeds available space.
-	if (buffer_free < str_length) {
-		char *tmp_buffer;
-		size_t needed = BUFFER_SIZE * (((str_length - buffer_free) + BUFFER_SIZE - 1) / BUFFER_SIZE);
-
-		tmp_buffer = (char *) realloc(context->buffer.bytes, context->buffer.size + needed);
-		if (tmp_buffer == NULL) {
-			php_handle_aborted_connection();
-		}
-
-		context->buffer.bytes = tmp_buffer;
-		context->buffer.size += needed;
+	int written = ContextWrite(context->parent, (void *) str, str_length);
+	if (written != str_length) {
+		php_handle_aborted_connection();
 	}
 
-	strcat(context->buffer.bytes, str);
-	context->buffer.used += str_length;
-
 	return str_length;
-}
-
-static void engine_flush(void *server_context) {
-	// Do nothing.
 }
 
 static void engine_send_header(sapi_header_struct *sapi_header, void *server_context TSRMLS_DC) {
@@ -78,7 +62,7 @@ sapi_module_struct engine_module = {
 	NULL,                        // Deactivate
 
 	engine_ub_write,             // Unbuffered Write
-	engine_flush,                // Flush
+	NULL,                        // Flush
 	NULL,                        // Get UID
 	NULL,                        // Getenv
 

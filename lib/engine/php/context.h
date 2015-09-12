@@ -5,16 +5,11 @@
 
 typedef struct _engine_context {
 	php_engine *engine; // Parent engine instance.
-	struct {
-		char *bytes;
-		size_t size;
-		size_t used;
-	} buffer;
+	void *parent;       // Pointer to parent Go context, used for passing to callbacks.
 } engine_context;
 
-engine_context *context_new(php_engine *engine);
+engine_context *context_new(php_engine *engine, void *parent);
 void context_run(engine_context *context, char *filename);
-size_t context_sync(engine_context *context, char **buffer);
 void context_destroy(engine_context *context);
 
 #endif

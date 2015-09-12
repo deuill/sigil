@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"runtime"
+	"unsafe"
 
 	// Internal packages
 	"github.com/deuill/sigil/lib/engine"
@@ -24,15 +25,14 @@ type Engine struct {
 }
 
 func (e *Engine) NewContext(w io.Writer) (engine.Context, error) {
-	ptr, err := C.context_new(e.engine)
+	ctx := &Context{writer: w}
+
+	ptr, err := C.context_new(e.engine, unsafe.Pointer(ctx))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to initialize context for PHP engine")
 	}
 
-	ctx := &Context{
-		context: ptr,
-		writer:  w,
-	}
+	ctx.context = ptr
 
 	runtime.SetFinalizer(ctx, func(ctx *Context) {
 		C.context_destroy(ctx.context)

@@ -28,8 +28,6 @@ func (c *Context) Run(filename string) error {
 	name := C.CString(filename)
 	defer C.free(unsafe.Pointer(name))
 
-	go c.sync()
-
 	_, err := C.context_run(c.context, name)
 	if err != nil {
 		return fmt.Errorf("Error executing script '%s' in context", filename)
@@ -38,19 +36,14 @@ func (c *Context) Run(filename string) error {
 	return nil
 }
 
-func (c *Context) sync() {
-	var buf *C.char
-	var num C.size_t
-	var err error
+//export ContextWrite
+func ContextWrite(ctxptr unsafe.Pointer, buffer unsafe.Pointer, length C.int) C.int {
+	context := (*Context)(ctxptr)
 
-	for {
-		if num, err = C.context_sync(c.context, &buf); err != nil {
-			break
-		} else if num == 0 {
-			continue
-		}
-
-		fmt.Fprint(c.writer, C.GoString(buf))
-		C.free(unsafe.Pointer(buf))
+	written, err := context.writer.Write(C.GoBytes(buffer, length))
+	if err != nil {
+		return C.int(0)
 	}
+
+	return C.int(written)
 }
