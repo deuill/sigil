@@ -36,7 +36,8 @@ func setup(name string) error {
 
 	// Load from specific configuration file if set, or use local configuration file as a fallback.
 	if file != "" {
-		if conf, err = globalconf.NewWithOptions(&globalconf.Options{file, ""}); err != nil {
+		options := &globalconf.Options{Filename: file, EnvPrefix: ""}
+		if conf, err = globalconf.NewWithOptions(options); err != nil {
 			return err
 		}
 	} else if conf, err = globalconf.New(name); err != nil {
