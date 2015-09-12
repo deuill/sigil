@@ -1,32 +1,18 @@
 # Sigil Tasks
 
 * Define engine interface. The 'v8' package for Go contains some good ideas to start with.
+* Start defining services and accompanying libraries, e.g. a Database service. This probably needs to be documented and researched before it is implemented.
 
-* Start defining services and accompanying libraries, e.g. a Database service. This probably needs to
-  be documented and researched before it is implemented.
-
-  In general, we need documentation in every level of the repository, be it README.md files describing
-  the general functionality implemented on that level, or source-level documentation that can be picked
-  up via godoc etc. This needs to be done, preferrably, before any code is even begun on that level.
-  That way, we'll have more time to resolve relationships between objects, which will lead to more
-  stable code.
+In general, we need documentation in every level of the repository, be it README.md files describing the general functionality implemented on that level, or source-level documentation that can be picked up via godoc etc. This needs to be done, preferrably, before any code is even begun on that level. That way, we'll have more time to resolve relationships between objects, which will lead to more stable code.
 
 # Sleepy Tasks
 
-* Port the Sleepy client to Sigil. There will probably need to be some work on Cecil and the Sleepy
-  app template too (adapting config files and moving files around, most likely).
+* Port the Sleepy client to Sigil. There will probably need to be some work on Cecil and the Sleepy app template too (adapting config files and moving files around, most likely).
 
 * Improve Sleepy core design.
 
-  Firstly, the use of static classes for Sleepy code could be eradicated, and moved to something like
-  a Session object instance for each session. The Session class would be responsible for largely the
-  same tasks as the Sleepy class, only more opaque. How this would hook into other classes, such as
-  the Dispatcher class, remains to be seen.
+Firstly, the use of static classes for Sleepy code could be eradicated, and moved to something like a Session object instance for each session. The Session class would be responsible for largely the same tasks as the Sleepy class, only more opaque. How this would hook into other classes, such as the Dispatcher class, remains to be seen.
 
 * Extend Sleepy features.
 
-  MVC works fine for smaller projects, but Controller methods often become too big for their own good,
-  and are not reusable. Extending the MVC paradigm used in Sleepy with components, that can be
-  instantiated and reused across Controller methods would be a first step. A tighter integration
-  between methods, views and Javascript components would also help, along with some kind of dual
-  communication via websockets.
+MVC works fine for smaller projects, but Controller methods often become too big for their own good, and are not reusable. Extending the MVC paradigm used in Sleepy with components, that can be instantiated and reused across Controller methods would be a first step. A tighter integration between methods, views and Javascript components would also help, along with some kind of dual communication via websockets.
