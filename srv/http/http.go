@@ -64,7 +64,7 @@ func (s *Service) handle(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Attempt to load file pointed to by URL path, moving on to the default engine handler for the
-	// specified host if no file exists (or is otherwise inaccessible) in that location.
+	// specified host if no file exists (or is otherwise inaccessible) for that location.
 	name := s.hosts[host].Base + "/" + s.hosts[host].Root + "/" + r.URL.Path
 	if fi, err := os.Stat(name); err != nil || fi.IsDir() {
 		index := s.hosts[host].Base + "/" + s.hosts[host].Index
@@ -78,17 +78,17 @@ func (s *Service) handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) fail(w http.ResponseWriter, code int) {
-	response := http.StatusText(code)
+	status := http.StatusText(code)
 
 	// Return error 500 if error code passed is undefined.
-	if response == "" {
+	if status == "" {
 		s.fail(w, 500)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
-	w.Write([]byte(response))
+	w.Write([]byte(`{"status": "` + status + `"}`))
 }
 
 func (s *Service) setup() error {
