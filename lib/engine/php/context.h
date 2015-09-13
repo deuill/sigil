@@ -1,8 +1,6 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#define BUFFER_SIZE 16 // Buffer size to use for the engine output buffer, in bytes.
-
 typedef struct _engine_context {
 	php_engine *engine; // Parent engine instance.
 	void *parent;       // Pointer to parent Go context, used for passing to callbacks.
