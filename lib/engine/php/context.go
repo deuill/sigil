@@ -24,7 +24,7 @@ func (c *Context) Bind(name string, value interface{}) error {
 	return nil
 }
 
-func (c *Context) Run(filename string) error {
+func (c *Context) Exec(filename string) error {
 	name := C.CString(filename)
 	defer C.free(unsafe.Pointer(name))
 

@@ -14,7 +14,7 @@ type Engine interface {
 
 type Context interface {
 	Bind(name string, value interface{}) error
-	Run(file string) error
+	Exec(file string) error
 }
 
 type Value interface {
@@ -53,7 +53,7 @@ func Handle(w io.Writer, file string) error {
 		return err
 	}
 
-	if err = ctx.Run(file); err != nil {
+	if err = ctx.Exec(file); err != nil {
 		return err
 	}
 
