@@ -36,8 +36,8 @@ func (c *Context) Exec(filename string) error {
 	return nil
 }
 
-//export ContextWrite
-func ContextWrite(ctxptr unsafe.Pointer, buffer unsafe.Pointer, length C.int) C.int {
+//export contextWrite
+func contextWrite(ctxptr unsafe.Pointer, buffer unsafe.Pointer, length C.int) C.int {
 	context := (*Context)(ctxptr)
 
 	written, err := context.writer.Write(C.GoBytes(buffer, length))

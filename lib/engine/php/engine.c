@@ -26,7 +26,7 @@ const char engine_ini_defaults[] =
 static int engine_ub_write(const char *str, uint str_length TSRMLS_DC)  {
 	engine_context *context = (engine_context *) SG(server_context);
 
-	int written = ContextWrite(context->parent, (void *) str, str_length);
+	int written = contextWrite(context->parent, (void *) str, str_length);
 	if (written != str_length) {
 		php_handle_aborted_connection();
 	}
